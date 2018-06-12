@@ -3,7 +3,6 @@
 
 class cbor_writer {
 public:
-	virtual void put_byte(uint64_t v) = 0;
 	virtual void put_bytes(const uint8_t *data, uint64_t size) = 0;
 };
 
@@ -14,22 +13,22 @@ public:
 	}
 
 	void write_null() {
-		writer.put_byte(0xf6);
+		put_byte(0xf6);
 	}
 
 	void write_undefined() {
-		writer.put_byte(0xf7);
+		put_byte(0xf7);
 	}
 
 	void write_bool(bool value) {
 		if (value)
-			writer.put_byte(0xf5);
+			put_byte(0xf5);
 		else
-			writer.put_byte(0xf4);
+			put_byte(0xf4);
 	}
 
 	void write_break() {
-		writer.put_byte(0xff);
+		put_byte(0xff);
 	}
 
 	void write_uint(const uint64_t value) {
@@ -76,35 +75,40 @@ public:
 private:
 	cbor_writer& writer;
 
+	void put_byte(uint64_t b) {
+		uint8_t i = (uint8_t)i;
+		writer.put_bytes(&i, 1);
+	}
+
 	void write_type_and_value(uint8_t major_type, uint64_t value) {
 		major_type <<= 5;
 		if (value < 24) {
-			writer.put_byte(major_type | value);
+			put_byte(major_type | value);
 		} else if (value < 256) {
-			writer.put_byte(major_type | 24);
-			writer.put_byte(value);
+			put_byte(major_type | 24);
+			put_byte(value);
 		} else if (value < 65536) {
-			writer.put_byte(major_type | 25);
-			writer.put_byte(value >> 8);
-			writer.put_byte(value);
+			put_byte(major_type | 25);
+			put_byte(value >> 8);
+			put_byte(value);
 		}
 		else if (value < 4294967296ULL) {
-			writer.put_byte(major_type | 26);
-			writer.put_byte(value >> 24);
-			writer.put_byte(value >> 16);
-			writer.put_byte(value >> 8);
-			writer.put_byte(value);
+			put_byte(major_type | 26);
+			put_byte(value >> 24);
+			put_byte(value >> 16);
+			put_byte(value >> 8);
+			put_byte(value);
 		}
 		else {
-			writer.put_byte(major_type | 27);
-			writer.put_byte(value >> 56);
-			writer.put_byte(value >> 48);
-			writer.put_byte(value >> 40);
-			writer.put_byte(value >> 32);
-			writer.put_byte(value >> 24);
-			writer.put_byte(value >> 16);
-			writer.put_byte(value >> 8);
-			writer.put_byte(value);
+			put_byte(major_type | 27);
+			put_byte(value >> 56);
+			put_byte(value >> 48);
+			put_byte(value >> 40);
+			put_byte(value >> 32);
+			put_byte(value >> 24);
+			put_byte(value >> 16);
+			put_byte(value >> 8);
+			put_byte(value);
 		}
 	}
 };
