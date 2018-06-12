@@ -76,7 +76,7 @@ private:
 	cbor_writer& writer;
 
 	void put_byte(uint64_t b) {
-		uint8_t i = (uint8_t)i;
+		uint8_t i = (uint8_t)b;
 		writer.put_bytes(&i, 1);
 	}
 
