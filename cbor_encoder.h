@@ -1,12 +1,10 @@
 #pragma once
 #include <cstdint>
-#include <cstddef>
-#include <istream>
 
 class cbor_writer {
 public:
 	virtual void put_byte(uint64_t v) = 0;
-	virtual void put_bytes(const uint8_t *data, uint32_t size) = 0;
+	virtual void put_bytes(const uint8_t *data, uint64_t size) = 0;
 };
 
 class cbor_encoder {
@@ -45,38 +43,34 @@ public:
 			write_type_and_value(0, value);
 	}
 
-	void write_bytes(const uint8_t* data, const uint32_t size) {
+	void write_bytes(const uint8_t* data, const uint64_t size) {
 		write_type_and_value(2, size);
 		writer.put_bytes(data, size);
 	}
 
-	void write_bytes_header(const uint8_t* data, const uint32_t size) {
+	void write_bytes_header(const uint8_t* data, const uint64_t size) {
 		write_type_and_value(2, size);
 	}
 
-	void write_string(const char* data, const uint32_t size) {
+	void write_string(const char* data, const uint64_t size) {
 		write_type_and_value(3, size);
 		writer.put_bytes((const uint8_t*)data, size);
 	}
 
-	void write_string_header(const char* data, const uint32_t size) {
+	void write_string_header(const char* data, const uint64_t size) {
 		write_type_and_value(3, size);
 	}
 	
-	void write_array(const uint32_t size) {
+	void write_array(const uint64_t size) {
 		write_type_and_value(4, size);
 	}
 
-	void write_map(const uint32_t size) {
+	void write_map(const uint64_t size) {
 		write_type_and_value(5, size);
 	}
 
-	void write_tag(const uint32_t tag) {
+	void write_tag(const uint64_t tag) {
 		write_type_and_value(6, tag);
-	}
-
-	void write_special(const uint32_t special) {
-		write_type_and_value(7, special);
 	}
 
 private:
