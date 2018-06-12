@@ -2,8 +2,6 @@
 #include <cstdint>
 #include <exception>
 
-//#define CBOR_DECODER_OBJECT_API
-
 class cbor_exception : public std::exception {};
 
 class cbor_reader {
