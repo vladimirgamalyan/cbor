@@ -3,7 +3,7 @@
 
 class cbor_writer {
 public:
-	virtual void put_bytes(const uint8_t* data, uint64_t size) = 0;
+	virtual void put_byte(uint8_t b) = 0;
 };
 
 class cbor_encoder {
@@ -42,21 +42,11 @@ public:
 			write_type_and_value(0, value);
 	}
 
-	void write_bytes(const uint8_t* data, uint64_t size) {
-		write_type_and_value(2, size);
-		writer.put_bytes(data, size);
-	}
-
-	void write_bytes_header(const uint8_t* data, uint64_t size) {
+	void write_bytes_header(uint64_t size) {
 		write_type_and_value(2, size);
 	}
 
-	void write_string(const char* data, uint64_t size) {
-		write_type_and_value(3, size);
-		writer.put_bytes((const uint8_t*)data, size);
-	}
-
-	void write_string_header(const char* data, uint64_t size) {
+	void write_string_header(uint64_t size) {
 		write_type_and_value(3, size);
 	}
 	
@@ -76,8 +66,7 @@ protected:
 	cbor_writer& writer;
 
 	void put_byte(uint64_t b) {
-		uint8_t i = (uint8_t)b;
-		writer.put_bytes(&i, 1);
+		writer.put_byte((uint8_t)b);
 	}
 
 	void write_type_and_value(uint8_t major_type, uint64_t value) {
