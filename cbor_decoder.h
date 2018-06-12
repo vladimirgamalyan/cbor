@@ -67,51 +67,51 @@ public:
 	uint64_t as_uint() const {
 		if (hdr >> 5 != 0)
 			throw cbor_decoder_exception();
-		return value;
+		return val;
 	}
 
 	int64_t as_int() const {
 		if (hdr >> 5 == 0)
-			return value;
+			return val;
 		if (hdr >> 5 != 1)
-			return -1 - value;
+			return -1 - val;
 		throw cbor_decoder_exception();
 	}
 
 	uint64_t as_bytes_header() const {
 		if (hdr >> 5 != 2)
 			throw cbor_decoder_exception();
-		return value;
+		return val;
 	}
 
 	uint64_t as_string_header() const {
 		if (hdr >> 5 != 3)
 			throw cbor_decoder_exception();
-		return value;
+		return val;
 	}
 
 	uint64_t as_array() const {
 		if (hdr >> 5 != 4)
 			throw cbor_decoder_exception();
-		return value;
+		return val;
 	}
 
 	uint64_t as_map() const {
 		if (hdr >> 5 != 5)
 			throw cbor_decoder_exception();
-		return value;
+		return val;
 	}
 
 	uint64_t as_tag() const {
 		if (hdr >> 5 != 6)
 			throw cbor_decoder_exception();
-		return value;
+		return val;
 	}
 
 private:
 	friend class cbor_decoder;
 	uint8_t hdr = 0;
-	uint64_t value;
+	uint64_t val;
 };
 
 class cbor_decoder {
@@ -121,48 +121,42 @@ public:
 	}
 
 	cbor_object next() {
-		cbor_object result;
+		cbor_object r;
 
-		result.hdr = reader.get_byte();
-		uint8_t additional_info = result.hdr & 31;
+		r.hdr = reader.get_byte();
+		uint8_t t = r.hdr & 31;
 
-		if (additional_info < 24)
-		{
-			result.value = additional_info;
+		if (t < 24) {
+			r.val = t;
 		}
-		else if (additional_info == 24)
-		{
-			result.value = reader.get_byte();
+		else if (t == 24) {
+			r.val = reader.get_byte();
 		}
-		else if (additional_info == 25)
-		{
-			uint64_t r = reader.get_byte();
-			result.value = (r << 8) + reader.get_byte();
+		else if (t == 25) {
+			r.val = reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
 		}
-		else if (additional_info == 26)
-		{
-			uint64_t r = reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			result.value = r;
+		else if (t == 26) {
+			r.val = reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
 		}
-		else if (additional_info == 27)
-		{
-			uint64_t r = reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			r = (r << 8) + reader.get_byte();
-			result.value = r;
+		else if (t == 27) {
+			r.val = reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
+			r.val = (r.val << 8) + reader.get_byte();
 		}
-		else
+		else if (t != 31) {
 			throw cbor_decoder_exception();
+		}
 
-		return result;
+		return r;
 	}
 
 private:
