@@ -109,14 +109,14 @@ public:
 	}
 
 private:
-	friend class cbor_decoder_new;
+	friend class cbor_decoder;
 	uint8_t hdr = 0;
 	uint64_t value;
 };
 
-class cbor_decoder_new {
+class cbor_decoder {
 public:
-	cbor_decoder_new(cbor_reader& reader) : reader(reader) {
+	cbor_decoder(cbor_reader& reader) : reader(reader) {
 
 	}
 
