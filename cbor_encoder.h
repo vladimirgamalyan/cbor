@@ -54,8 +54,16 @@ public:
 		write_type_and_value(4, size);
 	}
 
+	void write_indefinite_array() {
+		put_byte(0x9f);
+	}
+
 	void write_map(uint64_t size) {
 		write_type_and_value(5, size);
+	}
+
+	void write_indefinite_map() {
+		put_byte(0xbf);
 	}
 
 	void write_tag(uint64_t tag) {

@@ -16,15 +16,11 @@ public:
 	}
 
 	void read_null() {
-		uint8_t type = reader.get_byte();
-		if (type != 0xf6)
-			throw cbor_exception();
+		read_byte(0xf6);
 	}
 
 	void read_undefined() {
-		uint8_t type = reader.get_byte();
-		if (type != 0xf7)
-			throw cbor_exception();
+		read_byte(0xf7);
 	}
 
 	bool read_bool() {
@@ -38,9 +34,7 @@ public:
 	}
 
 	void read_break() {
-		uint8_t type = reader.get_byte();
-		if (type != 0xff)
-			throw cbor_exception();
+		read_byte(0xff);
 	}
 
 	uint64_t read_uint() {
@@ -69,8 +63,16 @@ public:
 		return read_object(4);
 	}
 
+	void read_indefinite_array() {
+		read_byte(0x9f);
+	}
+
 	uint64_t read_map() {
 		return read_object(5);
+	}
+
+	void read_indefinite_map() {
+		read_byte(0xbf);
 	}
 
 	uint64_t read_tag() {
@@ -79,6 +81,12 @@ public:
 
 protected:
 	cbor_reader & reader;
+
+	void read_byte(uint8_t b) {
+		uint8_t r = reader.get_byte();
+		if (r != b)
+			throw cbor_exception();
+	}
 
 	uint64_t read_object(uint8_t required_type) {
 		uint8_t type;
