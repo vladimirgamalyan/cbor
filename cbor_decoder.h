@@ -7,6 +7,7 @@ class cbor_exception : public std::exception {};
 class cbor_reader {
 public:
 	virtual uint8_t get_byte() = 0;
+	virtual void get_bytes(uint8_t* buffer, uint64_t size) = 0;
 };
 
 class cbor_decoder {
@@ -77,7 +78,7 @@ public:
 		return read_object(6);
 	}
 
-private:
+protected:
 	cbor_reader & reader;
 
 	uint64_t read_object(uint8_t required_type) {
