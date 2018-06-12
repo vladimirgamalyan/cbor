@@ -3,7 +3,7 @@
 
 class cbor_writer {
 public:
-	virtual void put_bytes(const uint8_t *data, uint64_t size) = 0;
+	virtual void put_bytes(const uint8_t* data, uint64_t size) = 0;
 };
 
 class cbor_encoder {
@@ -31,48 +31,48 @@ public:
 		put_byte(0xff);
 	}
 
-	void write_uint(const uint64_t value) {
+	void write_uint(uint64_t value) {
 		write_type_and_value(0, value);
 	}
 
-	void write_int(const int64_t value) {
+	void write_int(int64_t value) {
 		if (value < 0)
 			write_type_and_value(1, -(value + 1));
 		else
 			write_type_and_value(0, value);
 	}
 
-	void write_bytes(const uint8_t* data, const uint64_t size) {
+	void write_bytes(const uint8_t* data, uint64_t size) {
 		write_type_and_value(2, size);
 		writer.put_bytes(data, size);
 	}
 
-	void write_bytes_header(const uint8_t* data, const uint64_t size) {
+	void write_bytes_header(const uint8_t* data, uint64_t size) {
 		write_type_and_value(2, size);
 	}
 
-	void write_string(const char* data, const uint64_t size) {
+	void write_string(const char* data, uint64_t size) {
 		write_type_and_value(3, size);
 		writer.put_bytes((const uint8_t*)data, size);
 	}
 
-	void write_string_header(const char* data, const uint64_t size) {
+	void write_string_header(const char* data, uint64_t size) {
 		write_type_and_value(3, size);
 	}
 	
-	void write_array(const uint64_t size) {
+	void write_array(uint64_t size) {
 		write_type_and_value(4, size);
 	}
 
-	void write_map(const uint64_t size) {
+	void write_map(uint64_t size) {
 		write_type_and_value(5, size);
 	}
 
-	void write_tag(const uint64_t tag) {
+	void write_tag(uint64_t tag) {
 		write_type_and_value(6, tag);
 	}
 
-private:
+protected:
 	cbor_writer& writer;
 
 	void put_byte(uint64_t b) {
