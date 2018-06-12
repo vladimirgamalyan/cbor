@@ -57,11 +57,11 @@ public:
 		throw cbor_exception();
 	}
 
-	uint64_t read_bytes() {
+	uint64_t read_bytes_header() {
 		return read_object(2);
 	}
 
-	uint64_t read_string() {
+	uint64_t read_string_header() {
 		return read_object(3);
 	}
 
