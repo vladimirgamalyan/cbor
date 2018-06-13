@@ -1,7 +1,7 @@
 #pragma once 
 
-#include<cstdint> 
-#include<exception>
+#include <cstdint> 
+#include <exception>
 
 class cbor_decoder_exception : public std::exception {};
 
