@@ -106,7 +106,7 @@ public:
 private:
 	friend class cbor_decoder;
 	uint8_t hdr = 0;
-	uint64_t val;
+	uint64_t val = 0;
 };
 
 class cbor_decoder {
@@ -115,7 +115,7 @@ public:
 		cbor_object r;
 
 		r.hdr = get_byte();
-		uint8_t t = r.hdr & 31;
+		const uint8_t t = r.hdr & 31;
 
 		if (t < 24) {
 			r.val = t;

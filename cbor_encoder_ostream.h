@@ -24,7 +24,7 @@ public:
 
 private:
 	std::ostream& os;
-	virtual void put_byte(uint8_t b) override {
+	virtual void put_byte(uint8_t b) {
 		os.put((char)b);
 	}
 };

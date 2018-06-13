@@ -8,7 +8,7 @@ public:
 	cbor_decoder_istream(std::istream& s) : s(s) {}
 
 	std::string read_string_body(const cbor_object& o) {
-		uint64_t size = o.as_string_header();
+		const uint64_t size = o.as_string_header();
 		std::string r((size_t)size, ' ');
 		s.read(&r[0], (std::streamsize)size);
 		return r;
@@ -19,7 +19,7 @@ public:
 	}
 
 	std::vector<uint8_t> read_bytes_body(const cbor_object& o) {
-		uint64_t size = o.as_bytes_header();
+		const uint64_t size = o.as_bytes_header();
 		std::vector<uint8_t> r((size_t)size);
 		s.read((char*)&r[0], (std::streamsize)size);
 		return r;
@@ -31,7 +31,7 @@ public:
 
 private:
 	std::istream& s;
-	virtual uint8_t get_byte() override {
+	virtual uint8_t get_byte() {
 		return (uint8_t)s.get();
 	}
 };
