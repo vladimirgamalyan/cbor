@@ -1,15 +1,12 @@
 #pragma once
+
 #include <cstdint>
 
 class cbor_encoder {
 public:
-	void write_null() {
-		put_byte(0xf6);
-	}
+	void write_null() { put_byte(0xf6); }
 
-	void write_undefined() {
-		put_byte(0xf7);
-	}
+	void write_undefined() { put_byte(0xf7); }
 
 	void write_bool(bool value) {
 		if (value)
@@ -18,13 +15,9 @@ public:
 			put_byte(0xf4);
 	}
 
-	void write_break() {
-		put_byte(0xff);
-	}
+	void write_break() { put_byte(0xff); }
 
-	void write_uint(uint64_t value) {
-		write_type_and_value(0, value);
-	}
+	void write_uint(uint64_t value) { write_type_and_value(0, value); }
 
 	void write_int(int64_t value) {
 		if (value < 0)
@@ -33,33 +26,19 @@ public:
 			write_type_and_value(0, value);
 	}
 
-	void write_bytes_header(uint64_t size) {
-		write_type_and_value(2, size);
-	}
+	void write_bytes_header(uint64_t size) { write_type_and_value(2, size); }
 
-	void write_string_header(uint64_t size) {
-		write_type_and_value(3, size);
-	}
+	void write_string_header(uint64_t size) { write_type_and_value(3, size); }
 
-	void write_array(uint64_t size) {
-		write_type_and_value(4, size);
-	}
+	void write_array(uint64_t size) { write_type_and_value(4, size); }
 
-	void write_indefinite_array() {
-		put_byte(0x9f);
-	}
+	void write_indefinite_array() { put_byte(0x9f); }
 
-	void write_map(uint64_t size) {
-		write_type_and_value(5, size);
-	}
+	void write_map(uint64_t size) { write_type_and_value(5, size); }
 
-	void write_indefinite_map() {
-		put_byte(0xbf);
-	}
+	void write_indefinite_map() { put_byte(0xbf); }
 
-	void write_tag(uint64_t tag) {
-		write_type_and_value(6, tag);
-	}
+	void write_tag(uint64_t tag) { write_type_and_value(6, tag); }
 
 protected:
 	virtual void put_byte(uint8_t b) = 0;
