@@ -6,7 +6,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 ## Упаковка в CBOR
 Добавлям себе в проект `cbor_encoder.h`, наследуем `cbor_encoder` и определяем метод для записи одного байта:
 
-    virtual void put_byte(uint8_t b) = 0;
+    virtual void put_byte(uint8_t b);
 
 Используем методы `cbor_encoder` (`write_bool()`, `write_int()`, `write_array()` и т.д.) для упаковки данных.
 При записи бинарных данных или строк сначала пишется заголовок (`write_bytes_header()` или `write_string_header()`), а затем
@@ -18,7 +18,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 ## Распаковка из CBOR
 Добавляем в проект `cbor_decoder.h`, наследуем `cbor_decoder` и определяем ему метод для чтения одного байта:
 
-    virtual uint8_t get_byte() = 0;
+    virtual uint8_t get_byte();
 
 Для получения следующей записи из потока CBOR используем метод `cbor_decoder::read()` который возвращает 
 объект типа `cbor_object`. Этот объект позволяет проверить свой тип (`is_bool()`, `is_string()` и т.д.) и получить
