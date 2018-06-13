@@ -32,7 +32,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 
 	{
 		std::ofstream f("test.bin", std::fstream::binary);
-		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		f.exceptions(std::fstream::failbit | std::fstream::badbit);
 		cbor_encoder_ostream encoder(f);
 
 		encoder.write_array(2);
@@ -42,7 +42,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 
 	{
 		std::ifstream f("test.bin", std::fstream::binary);
-		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		f.exceptions(std::fstream::failbit | std::fstream::badbit);
 		cbor_decoder_istream decoder(f);
 
 		std::cout << "array size: " << decoder.read_array()  << std::endl;
