@@ -1,6 +1,8 @@
 #pragma once
 
 #include <istream>
+#include <string>
+#include <vector>
 #include "cbor_decoder.h"
 
 class cbor_decoder_istream : public cbor_decoder {
