@@ -1,16 +1,8 @@
 #pragma once
 #include <cstdint>
 
-class cbor_writer {
-public:
-	virtual void put_byte(uint8_t b) = 0;
-};
-
 class cbor_encoder {
 public:
-	cbor_encoder(cbor_writer& writer) : writer(writer) {
-
-	}
 
 	void write_null() {
 		put_byte(0xf6);
@@ -49,7 +41,7 @@ public:
 	void write_string_header(uint64_t size) {
 		write_type_and_value(3, size);
 	}
-	
+
 	void write_array(uint64_t size) {
 		write_type_and_value(4, size);
 	}
@@ -71,41 +63,39 @@ public:
 	}
 
 protected:
-	cbor_writer& writer;
-
-	void put_byte(uint64_t b) {
-		writer.put_byte((uint8_t)b);
-	}
+	virtual void put_byte(uint8_t b) = 0;
 
 	void write_type_and_value(uint8_t major_type, uint64_t value) {
 		major_type <<= 5;
 		if (value < 24) {
-			put_byte(major_type | value);
-		} else if (value < 256) {
-			put_byte(major_type | 24);
-			put_byte(value);
-		} else if (value < 65536) {
-			put_byte(major_type | 25);
-			put_byte(value >> 8);
-			put_byte(value);
+			put_byte((uint8_t)(major_type | value));
+		}
+		else if (value < 256) {
+			put_byte((uint8_t)(major_type | 24));
+			put_byte((uint8_t)value);
+		}
+		else if (value < 65536) {
+			put_byte((uint8_t)(major_type | 25));
+			put_byte((uint8_t)(value >> 8));
+			put_byte((uint8_t)value);
 		}
 		else if (value < 4294967296ULL) {
-			put_byte(major_type | 26);
-			put_byte(value >> 24);
-			put_byte(value >> 16);
-			put_byte(value >> 8);
-			put_byte(value);
+			put_byte((uint8_t)(major_type | 26));
+			put_byte((uint8_t)(value >> 24));
+			put_byte((uint8_t)(value >> 16));
+			put_byte((uint8_t)(value >> 8));
+			put_byte((uint8_t)value);
 		}
 		else {
-			put_byte(major_type | 27);
-			put_byte(value >> 56);
-			put_byte(value >> 48);
-			put_byte(value >> 40);
-			put_byte(value >> 32);
-			put_byte(value >> 24);
-			put_byte(value >> 16);
-			put_byte(value >> 8);
-			put_byte(value);
+			put_byte((uint8_t)(major_type | 27));
+			put_byte((uint8_t)(value >> 56));
+			put_byte((uint8_t)(value >> 48));
+			put_byte((uint8_t)(value >> 40));
+			put_byte((uint8_t)(value >> 32));
+			put_byte((uint8_t)(value >> 24));
+			put_byte((uint8_t)(value >> 16));
+			put_byte((uint8_t)(value >> 8));
+			put_byte((uint8_t)(value));
 		}
 	}
 };

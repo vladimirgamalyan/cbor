@@ -4,11 +4,6 @@
 
 class cbor_decoder_exception : public std::exception {};
 
-class cbor_reader {
-public:
-	virtual uint8_t get_byte() = 0;
-};
-
 class cbor_object {
 public:
 	bool is_nill() const {
@@ -116,41 +111,37 @@ private:
 
 class cbor_decoder {
 public:
-	cbor_decoder(cbor_reader& reader) : reader(reader) {
-
-	}
-
 	cbor_object next() {
 		cbor_object r;
 
-		r.hdr = reader.get_byte();
+		r.hdr = get_byte();
 		uint8_t t = r.hdr & 31;
 
 		if (t < 24) {
 			r.val = t;
 		}
 		else if (t == 24) {
-			r.val = reader.get_byte();
+			r.val = get_byte();
 		}
 		else if (t == 25) {
-			r.val = reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
+			r.val = get_byte();
+			r.val = (r.val << 8) + get_byte();
 		}
 		else if (t == 26) {
-			r.val = reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
+			r.val = get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
 		}
 		else if (t == 27) {
-			r.val = reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
-			r.val = (r.val << 8) + reader.get_byte();
+			r.val = get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
+			r.val = (r.val << 8) + get_byte();
 		}
 		else if (t != 31) {
 			throw cbor_decoder_exception();
@@ -158,7 +149,6 @@ public:
 
 		return r;
 	}
-
-private:
-	cbor_reader & reader;
+protected:
+	virtual uint8_t get_byte() = 0;
 };
