@@ -13,7 +13,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 сами данные (без участия класса `cbor_encoder`).
 
 Либо используем готовый класс `cbor_encoder_ostream` из `cbor_encoder_ostream.h`, который расширяет `cbor_encoder` для работы 
-с потоками вывода (ostream) и добавляет удобные методы для сохранения бинарных данных и строк.
+со стандартными потоками вывода (std::ostream) и добавляет удобные методы для сохранения бинарных данных и строк.
 
 ## Распаковка из CBOR
 Добавляем в проект `cbor_decoder.h`, наследуем `cbor_decoder` и определяем ему метод для чтения одного байта:
@@ -26,7 +26,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 исключение.
 
 Либо используем готовый класс `cbor_decoder_istream` из `cbor_decoder_istream.h`, который расширяет `cbor_decoder` для работы 
-с потоками ввода (istream) и добавляет удобные методы для чтения бинарных данных и строк.
+со стандартными потоками ввода (std::istream) и добавляет удобные методы для чтения бинарных данных и строк.
 
 ## Пример
 
