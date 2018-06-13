@@ -111,7 +111,7 @@ private:
 
 class cbor_decoder {
 public:
-	cbor_object next() {
+	cbor_object read() {
 		cbor_object r;
 
 		r.hdr = get_byte();

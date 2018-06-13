@@ -3,7 +3,6 @@
 
 class cbor_encoder {
 public:
-
 	void write_null() {
 		put_byte(0xf6);
 	}

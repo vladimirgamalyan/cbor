@@ -15,7 +15,7 @@ public:
 	}
 
 	std::string read_string() {
-		return read_string_body(next());
+		return read_string_body(read());
 	}
 
 	std::vector<uint8_t> read_bytes_body(const cbor_object& o) {
@@ -26,7 +26,7 @@ public:
 	}
 
 	std::vector<uint8_t> read_bytes() {
-		return read_bytes_body(next());
+		return read_bytes_body(read());
 	}
 
 private:
