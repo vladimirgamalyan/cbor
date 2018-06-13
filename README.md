@@ -4,7 +4,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 Заголовочные файлы для чтения/записи в [CBOR](http://cbor.io/) формате в потоковом режиме.
 
 ## Упаковка в CBOR
-Добавлям себе в проект `cbor_encoder.h`, наследуем cbor_encoder и определяем метод для записи одного байта:
+Добавлям себе в проект `cbor_encoder.h`, наследуем `cbor_encoder` и определяем метод для записи одного байта:
 
     virtual void put_byte(uint8_t b) = 0;
 
@@ -12,7 +12,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 При записи бинарных данных или строк сначала пишется заголовок (`write_bytes_header()` или `write_string_header()`), а затем
 сами данные (без участия класса `cbor_encoder`).
 
-Либо используем готовый класс `cbor_encoder_ostream` из `cbor_encoder_ostream.h`, который расширяет cbor_encoder для работы 
+Либо используем готовый класс `cbor_encoder_ostream` из `cbor_encoder_ostream.h`, который расширяет `cbor_encoder` для работы 
 с потоками вывода (ostream) и добавляет удобные методы для сохранения бинарных данных и строк.
 
 ## Распаковка из CBOR
@@ -22,7 +22,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 
 Для получения следующей записи из потока CBOR используем метод `cbor_decoder::read()` который возвращает 
 объект типа `cbor_object`. Этот объект позволяет проверить свой тип (`is_bool()`, `is_string()` и т.д.) и получить
-значение (`as_bool()`, `as_int()` и т.д). Если попытаться получить значение из объекта другого типа, то возникает 
+значение (`as_bool()`, `as_int()` и т.д). Если попытаться получить значение, несоответствующее типу объекта, то возникает 
 исключение.
 
 Либо используем готовый класс `cbor_decoder_istream` из `cbor_decoder_istream.h`, который расширяет `cbor_decoder` для работы 
@@ -34,6 +34,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 		std::ofstream f("test.bin", std::fstream::binary);
 		f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		cbor_encoder_ostream encoder(f);
+
 		encoder.write_array(2);
 		encoder.write_string("Hello, World!");
 		encoder.write_int(42);
