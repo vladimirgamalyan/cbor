@@ -8,12 +8,7 @@ public:
 
 	void write_undefined() { put_byte(0xf7); }
 
-	void write_bool(bool value) {
-		if (value)
-			put_byte(0xf5);
-		else
-			put_byte(0xf4);
-	}
+	void write_bool(bool value) { put_byte(value ? 0xf5 : 0xf4); }
 
 	void write_break() { put_byte(0xff); }
 
