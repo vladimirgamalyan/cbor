@@ -32,10 +32,9 @@ public:
 	bool as_bool() const {
 		if (hdr == 0xf4)
 			return false;
-		else if (hdr == 0xf5)
+		if (hdr == 0xf5)
 			return true;
-		else
-			throw cbor_decoder_exception();
+		throw cbor_decoder_exception();
 	}
 
 	uint64_t as_uint() const {
