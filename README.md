@@ -3,6 +3,10 @@ A lightning fast, header only, stream oriented [CBOR](http://cbor.io/) encoder/d
 
 [![Actions Status](https://github.com/vladimirgamalyan/cbor/workflows/test/badge.svg)](https://github.com/vladimirgamalyan/cbor/actions)
 
+
+![](https://github.com/vladimirgamalyan/cbor/workflows/test/badge.svg)
+
+
 Заголовочные файлы для чтения/записи в [CBOR](http://cbor.io/) формате в потоковом режиме.
 
 ## Упаковка в CBOR
