@@ -1,6 +1,8 @@
 ﻿# cbor
 A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 
+[![Actions Status](https://github.com/vladimirgamalyan/cbor/workflows/Test/badge.svg)](https://github.com/vladimirgamalyan/cbor/actions)
+
 Заголовочные файлы для чтения/записи в [CBOR](http://cbor.io/) формате в потоковом режиме.
 
 ## Упаковка в CBOR
