@@ -5,3 +5,6 @@
 /*.vcxproj
 /*.user
 /test.bin
+/test/test
+/test/test.bin
+
