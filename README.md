@@ -45,7 +45,7 @@ A lightning fast stream oriented CBOR encoder/decoder with no memory usage.
 		f.exceptions(std::fstream::failbit | std::fstream::badbit);
 		cbor_decoder_istream decoder(f);
 
-		std::cout << "array size: " << decoder.read_array()  << std::endl;
+		std::cout << "array size: " << decoder.read().as_array() << std::endl;
 		std::cout << decoder.read_string()  << std::endl;
 		std::cout << decoder.read().as_int() << std::endl;
 	}
