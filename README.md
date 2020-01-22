@@ -1,5 +1,5 @@
 ﻿# cbor
-A lightning fast stream oriented CBOR header only encoder/decoder with no memory usage.
+A lightning fast, header only, stream oriented [CBOR](http://cbor.io/) encoder/decoder with no memory usage.
 
 [![Actions Status](https://github.com/vladimirgamalyan/cbor/workflows/Test/badge.svg)](https://github.com/vladimirgamalyan/cbor/actions)
 
