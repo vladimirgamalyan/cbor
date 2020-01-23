@@ -3,34 +3,26 @@ A lightning fast, header only, stream oriented [CBOR](http://cbor.io/) encoder/d
 
 [![Actions Status](https://github.com/vladimirgamalyan/cbor/workflows/ci/badge.svg)](https://github.com/vladimirgamalyan/cbor/actions)
 
-Заголовочные файлы для чтения/записи в [CBOR](http://cbor.io/) формате в потоковом режиме.
 
-## Упаковка в CBOR
-Добавлям себе в проект `cbor_encoder.h`, наследуем `cbor_encoder` и определяем метод для записи одного байта:
+## Encode CBOR
+Inherite `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` method for write one byte anywhere you like:
 
     virtual void put_byte(uint8_t b);
 
-Используем методы `cbor_encoder` (`write_bool()`, `write_int()`, `write_array()` и т.д.) для упаковки данных.
-При записи бинарных данных или строк сначала пишется заголовок (`write_bytes_header()` или `write_string_header()`), а затем
-сами данные (без участия класса `cbor_encoder`).
+Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()`) and then write the data to output stream directly.
 
-Либо используем готовый класс `cbor_encoder_ostream` из `cbor_encoder_ostream.h`, который расширяет `cbor_encoder` для работы 
-со стандартными потоками вывода (std::ostream) и добавляет удобные методы для сохранения бинарных данных и строк.
+A helper class `cbor_encoder_ostream` from `cbor_encoder_ostream.h` extends `cbor_encoder` to work with standart `std::istream`.
 
-## Распаковка из CBOR
-Добавляем в проект `cbor_decoder.h`, наследуем `cbor_decoder` и определяем ему метод для чтения одного байта:
+## Decode CBOR
+Inherite `cbor_decoder` from `cbor_decoder.h`, and override `get_byte` to read one byte from input source:
 
     virtual uint8_t get_byte();
 
-Для получения следующей записи из потока CBOR используем метод `cbor_decoder::read()` (вызовет исключение, если запись некорректная), 
-который возвращает объект типа `cbor_object`. Этот объект позволяет проверить свой тип (`is_bool()`, `is_string()` и т.д.) и получить
-значение (`as_bool()`, `as_int()` и т.д). Если попытаться получить значение, несоответствующее типу объекта, то возникает 
-исключение.
+Then use `cbor_decoder::read()` to read next records (`cbor_object`) from the input (it will raise an exception on bad records). The `cbor_object` has type check methods (`is_bool()`, `is_string()` etc.) and get value methods (`as_bool()`, `as_int()`). Methods for get values will raise an exception when real type of records is different.
 
-Либо используем готовый класс `cbor_decoder_istream` из `cbor_decoder_istream.h`, который расширяет `cbor_decoder` для работы 
-со стандартными потоками ввода (std::istream) и добавляет удобные методы для чтения бинарных данных и строк.
+A helper class `cbor_decoder_istream` from `cbor_decoder_istream.h` extends `cbor_decoder` to work with standart `std::ostream`.
 
-## Пример
+## Example
 
 	{
 		std::ofstream f("test.bin", std::fstream::binary);
@@ -51,4 +43,3 @@ A lightning fast, header only, stream oriented [CBOR](http://cbor.io/) encoder/d
 		std::cout << decoder.read_string()  << std::endl;
 		std::cout << decoder.read().as_int() << std::endl;
 	}
-
