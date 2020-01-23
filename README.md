@@ -5,7 +5,7 @@ A lightning fast, header only, stream oriented [CBOR](http://cbor.io/) encoder/d
 
 
 ## Encode CBOR
-Inherite `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` method for write one byte anywhere you like:
+Inherit `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` method for write one byte anywhere you like:
 
     virtual void put_byte(uint8_t b);
 
@@ -14,7 +14,7 @@ Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` 
 A helper class `cbor_encoder_ostream` from `cbor_encoder_ostream.h` extends `cbor_encoder` to work with standart `std::istream`.
 
 ## Decode CBOR
-Inherite `cbor_decoder` from `cbor_decoder.h`, and override `get_byte` to read one byte from input source:
+Inherit `cbor_decoder` from `cbor_decoder.h`, and override `get_byte` to read one byte from input source:
 
     virtual uint8_t get_byte();
 
