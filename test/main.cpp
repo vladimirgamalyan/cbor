@@ -36,7 +36,7 @@ size_t packed_integer_len(int64_t n)
 	std::stringstream ss;
 	cbor_encoder_ostream encoder(ss);
 	encoder.write_int(n);
-	ss.seekg(0, ios::end);
+	ss.seekg(0, std::ios::end);
 	return oss.tellg();
 }
 
