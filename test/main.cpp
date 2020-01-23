@@ -48,7 +48,7 @@ TEST_CASE("number length")
 	REQUIRE(packed_integer_len(255) == 2);
 	REQUIRE(packed_integer_len(256) == 3);
 	REQUIRE(packed_integer_len(65535) == 3);
-	REQUIRE(packed_integer_len(65536) == 4);
-	REQUIRE(packed_integer_len(4294967295) == 4);
-	REQUIRE(packed_integer_len(4294967296) == 5);
+	REQUIRE(packed_integer_len(65536) == 5);
+	REQUIRE(packed_integer_len(4294967295) == 5);
+	REQUIRE(packed_integer_len(4294967296) == 9);
 }
