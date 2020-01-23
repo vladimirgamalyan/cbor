@@ -36,7 +36,7 @@ size_t packed_integer_len(int64_t n)
 	std::ostringstream oss;
 	cbor_encoder_ostream encoder(oss);
 	encoder.write_int(n);
-	oss.seekg(0, std::ios::end);
+	oss.seekp(0, std::ios::end);
 	return oss.tellg();
 }
 
