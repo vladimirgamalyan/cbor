@@ -33,10 +33,10 @@ TEST_CASE("simple file read/write")
 
 size_t packed_integer_len(int64_t n)
 {
-	std::stringstream ss;
-	cbor_encoder_ostream encoder(ss);
+	std::ostringstream oss;
+	cbor_encoder_ostream encoder(oss);
 	encoder.write_int(n);
-	ss.seekg(0, std::ios::end);
+	oss.seekg(0, std::ios::end);
 	return oss.tellg();
 }
 
