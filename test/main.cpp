@@ -1,5 +1,5 @@
 /*
-	This test suite contains some parts of https://bitbucket.org/isode/cbor-lite/src/master/unit/codec.cpp.
+	This test suite contains some parts of https://bitbucket.org/isode/cbor-lite/src/master/unit/codec.cpp
 	cbor-lite is a MIT licensed software and requires to include next copyright notice:
 
 	Copyright 2018-2019 Isode Limited.
@@ -31,6 +31,43 @@
 #include "../cbor_decoder_istream.h"
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
+#include "json.hpp"
+
+typedef std::vector<uint8_t> vec;
+
+class cbor : public cbor_encoder_ostream
+{
+public:
+	cbor() : cbor_encoder_ostream(oss) {}
+
+	void chk(const vec& data)
+	{
+		REQUIRE(get_data() == data);
+	}
+
+	static void chk_uint(uint64_t n, const vec& data)
+	{
+		cbor enc;
+		enc.write_uint(n);
+		enc.chk(data);
+	}
+
+	static void chk_int(int64_t n, const vec& data)
+	{
+		cbor enc;
+		enc.write_int(n);
+		enc.chk(data);
+	}
+
+private:
+	std::ostringstream oss;
+
+	vec get_data() const
+	{
+		std::string str = oss.str();
+		return { str.begin(), str.end() };
+	}
+};
 
 namespace doctest
 {
@@ -79,77 +116,79 @@ TEST_CASE("simple file read/write")
 	}
 }
 
-size_t packed_integer_len(int64_t n)
-{
-	std::ostringstream oss;
-	cbor_encoder_ostream encoder(oss);
-	encoder.write_int(n);
-	return static_cast<size_t>(oss.tellp());
-}
-
-TEST_CASE("integer length")
-{
-	REQUIRE(packed_integer_len(0) == 1);
-	REQUIRE(packed_integer_len(1) == 1);
-	REQUIRE(packed_integer_len(23) == 1);
-	REQUIRE(packed_integer_len(24) == 2);
-	REQUIRE(packed_integer_len(255) == 2);
-	REQUIRE(packed_integer_len(256) == 3);
-	REQUIRE(packed_integer_len(65535) == 3);
-	REQUIRE(packed_integer_len(65536) == 5);
-	REQUIRE(packed_integer_len(4294967295) == 5);
-	REQUIRE(packed_integer_len(4294967296) == 9);
-}
-
-std::vector<uint8_t> packed_unsigned_integer(uint64_t n)
-{
-	std::ostringstream oss;
-	cbor_encoder_ostream encoder(oss);
-	encoder.write_uint(n);
-	std::string str = oss.str();
-	std::vector<uint8_t> result(str.begin(), str.end());
-	return result;
-}
-
-std::vector<uint8_t> packed_integer(int64_t n)
-{
-	std::ostringstream oss;
-	cbor_encoder_ostream encoder(oss);
-	encoder.write_int(n);
-	std::string str = oss.str();
-	std::vector<uint8_t> result(str.begin(), str.end());
-	return result;
-}
-
 TEST_CASE("unsigned integer")
 {
-	REQUIRE(packed_unsigned_integer(0u) == std::vector<uint8_t>{ 0x00 });
-	REQUIRE(packed_unsigned_integer(1u) == std::vector<uint8_t>{ 0x01 });
-	REQUIRE(packed_unsigned_integer(10u) == std::vector<uint8_t>{ 0x0a });
-	REQUIRE(packed_unsigned_integer(23u) == std::vector<uint8_t>{ 0x17 });
-	REQUIRE(packed_unsigned_integer(24u) == std::vector<uint8_t>{ 0x18, 0x18 });
-	REQUIRE(packed_unsigned_integer(25u) == std::vector<uint8_t>{ 0x18, 0x19 });
-	REQUIRE(packed_unsigned_integer(100u) == std::vector<uint8_t>{ 0x18, 0x64 });
-	REQUIRE(packed_unsigned_integer(1000u) == std::vector<uint8_t>{ 0x19, 0x03, 0xe8 });
-	REQUIRE(packed_unsigned_integer(1000000u) == std::vector<uint8_t>{ 0x1a, 0x00, 0x0f, 0x42, 0x40 });
-	REQUIRE(packed_unsigned_integer(1000000000000u) == std::vector<uint8_t>{ 0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00 });
-	REQUIRE(packed_unsigned_integer(18446744073709551615u) == std::vector<uint8_t>{ 0x1b, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff });
+	cbor::chk_uint(0u, { 0x00 });
+	cbor::chk_uint(1u, { 0x01 });
+	cbor::chk_uint(10u, { 0x0a });
+	cbor::chk_uint(23u, { 0x17 });
+	cbor::chk_uint(24u, { 0x18, 0x18 });
+	cbor::chk_uint(25u, { 0x18, 0x19 });
+	cbor::chk_uint(100u, { 0x18, 0x64 });
+	cbor::chk_uint(1000u, { 0x19, 0x03, 0xe8 });
+	cbor::chk_uint(1000000u, { 0x1a, 0x00, 0x0f, 0x42, 0x40 });
+	cbor::chk_uint(1000000000000u, { 0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00 });
+	cbor::chk_uint(18446744073709551615u, { 0x1b, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff });
 }
 
 TEST_CASE("integer")
 {
-	REQUIRE(packed_integer(0) == std::vector<uint8_t>{ 0x00 });
-	REQUIRE(packed_integer(1) == std::vector<uint8_t>{ 0x01 });
-	REQUIRE(packed_integer(10) == std::vector<uint8_t>{ 0x0a });
-	REQUIRE(packed_integer(23) == std::vector<uint8_t>{ 0x17 });
-	REQUIRE(packed_integer(24) == std::vector<uint8_t>{ 0x18, 0x18 });
-	REQUIRE(packed_integer(25) == std::vector<uint8_t>{ 0x18, 0x19 });
-	REQUIRE(packed_integer(100) == std::vector<uint8_t>{ 0x18, 0x64 });
-	REQUIRE(packed_integer(1000) == std::vector<uint8_t>{ 0x19, 0x03, 0xe8 });
-	REQUIRE(packed_integer(1000000) == std::vector<uint8_t>{ 0x1a, 0x00, 0x0f, 0x42, 0x40 });
-	REQUIRE(packed_integer(1000000000000) == std::vector<uint8_t>{ 0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00 });
-	REQUIRE(packed_integer(-1) == std::vector<uint8_t>{ 0x20 });
-	REQUIRE(packed_integer(-10) == std::vector<uint8_t>{ 0x29 });
-	REQUIRE(packed_integer(-100) == std::vector<uint8_t>{ 0x38, 0x63 });
-	REQUIRE(packed_integer(-1000) == std::vector<uint8_t>{ 0x39, 0x03, 0xe7 });
+	cbor::chk_int(0, { 0x00 });
+	cbor::chk_int(1, { 0x01 });
+	cbor::chk_int(10, { 0x0a });
+	cbor::chk_int(23, { 0x17 });
+	cbor::chk_int(24, { 0x18, 0x18 });
+	cbor::chk_int(25, { 0x18, 0x19 });
+	cbor::chk_int(100, { 0x18, 0x64 });
+	cbor::chk_int(1000, { 0x19, 0x03, 0xe8 });
+	cbor::chk_int(1000000, { 0x1a, 0x00, 0x0f, 0x42, 0x40 });
+	cbor::chk_int(1000000000000, { 0x1b, 0x00, 0x00, 0x00, 0xe8, 0xd4, 0xa5, 0x10, 0x00 });
+	cbor::chk_int(-1, { 0x20 });
+	cbor::chk_int(-10, { 0x29 });
+	cbor::chk_int(-100, { 0x38, 0x63 });
+	cbor::chk_int(-1000, { 0x39, 0x03, 0xe7 });
+}
+
+bool validate_test_vecrtors()
+{
+	//TODO:
+	return true;
+}
+
+TEST_CASE("test vectors")
+{
+	REQUIRE(validate_test_vecrtors());
+}
+
+TEST_CASE("boolean")
+{
+	cbor enc;
+
+	SUBCASE("false")
+	{
+		enc.write_bool(false);
+		enc.chk(vec{ 0xf4 });
+	}
+
+	SUBCASE("true")
+	{
+		enc.write_bool(true);
+		enc.chk(vec{ 0xf5 });
+	}
+
+	SUBCASE("false and true")
+	{
+		enc.write_bool(false);
+		enc.chk(vec{ 0xf4 });
+		enc.write_bool(true);
+		enc.chk(vec{ 0xf4, 0xf5 });
+	}
+
+	SUBCASE("true and false")
+	{
+		enc.write_bool(true);
+		enc.chk(vec{ 0xf5 });
+		enc.write_bool(false);
+		enc.chk(vec{ 0xf5, 0xf4 });
+	}
 }
