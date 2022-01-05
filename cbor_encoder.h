@@ -39,35 +39,35 @@ protected:
 	virtual void put_byte(uint8_t b) = 0;
 
 	void write_type_and_value(uint8_t major_type, uint64_t value) {
-		major_type <<= 5;
+		major_type <<= 5u;
 		if (value < 24) {
 			put_byte((uint8_t)(major_type | value));
 		}
 		else if (value < 256) {
-			put_byte((uint8_t)(major_type | 24));
+			put_byte((uint8_t)(major_type | 24u));
 			put_byte((uint8_t)value);
 		}
 		else if (value < 65536) {
-			put_byte((uint8_t)(major_type | 25));
-			put_byte((uint8_t)(value >> 8));
+			put_byte((uint8_t)(major_type | 25u));
+			put_byte((uint8_t)(value >> 8u));
 			put_byte((uint8_t)value);
 		}
 		else if (value < 4294967296ULL) {
-			put_byte((uint8_t)(major_type | 26));
-			put_byte((uint8_t)(value >> 24));
-			put_byte((uint8_t)(value >> 16));
-			put_byte((uint8_t)(value >> 8));
+			put_byte((uint8_t)(major_type | 26u));
+			put_byte((uint8_t)(value >> 24u));
+			put_byte((uint8_t)(value >> 16u));
+			put_byte((uint8_t)(value >> 8u));
 			put_byte((uint8_t)value);
 		}
 		else {
-			put_byte((uint8_t)(major_type | 27));
-			put_byte((uint8_t)(value >> 56));
-			put_byte((uint8_t)(value >> 48));
-			put_byte((uint8_t)(value >> 40));
-			put_byte((uint8_t)(value >> 32));
-			put_byte((uint8_t)(value >> 24));
-			put_byte((uint8_t)(value >> 16));
-			put_byte((uint8_t)(value >> 8));
+			put_byte((uint8_t)(major_type | 27u));
+			put_byte((uint8_t)(value >> 56u));
+			put_byte((uint8_t)(value >> 48u));
+			put_byte((uint8_t)(value >> 40u));
+			put_byte((uint8_t)(value >> 32u));
+			put_byte((uint8_t)(value >> 24u));
+			put_byte((uint8_t)(value >> 16u));
+			put_byte((uint8_t)(value >> 8u));
 			put_byte((uint8_t)(value));
 		}
 	}

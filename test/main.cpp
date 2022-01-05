@@ -167,28 +167,28 @@ TEST_CASE("boolean")
 	SUBCASE("false")
 	{
 		enc.write_bool(false);
-		enc.chk(vec{ 0xf4 });
+		enc.chk({ 0xf4 });
 	}
 
 	SUBCASE("true")
 	{
 		enc.write_bool(true);
-		enc.chk(vec{ 0xf5 });
+		enc.chk({ 0xf5 });
 	}
 
 	SUBCASE("false and true")
 	{
 		enc.write_bool(false);
-		enc.chk(vec{ 0xf4 });
+		enc.chk({ 0xf4 });
 		enc.write_bool(true);
-		enc.chk(vec{ 0xf4, 0xf5 });
+		enc.chk({ 0xf4, 0xf5 });
 	}
 
 	SUBCASE("true and false")
 	{
 		enc.write_bool(true);
-		enc.chk(vec{ 0xf5 });
+		enc.chk({ 0xf5 });
 		enc.write_bool(false);
-		enc.chk(vec{ 0xf5, 0xf4 });
+		enc.chk({ 0xf5, 0xf4 });
 	}
 }
