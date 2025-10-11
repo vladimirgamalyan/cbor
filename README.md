@@ -9,7 +9,7 @@ Inherit `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` meth
 
     virtual void put_byte(uint8_t b);
 
-Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()`) and then write the data to output stream directly.
+Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()` and then write the data to output stream directly.
 
 A helper class `cbor_encoder_ostream` from `cbor_encoder_ostream.h` extends `cbor_encoder` to work with standard `std::ostream`.
 
