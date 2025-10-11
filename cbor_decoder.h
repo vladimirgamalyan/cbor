@@ -46,7 +46,7 @@ public:
 	int64_t as_int() const {
 		if (hdr >> 5u == 0)
 			return val;
-		if (hdr >> 5u != 1)
+		if (hdr >> 5u == 1)
 			return -1 - val;
 		throw cbor_decoder_exception();
 	}
