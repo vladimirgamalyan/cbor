@@ -149,7 +149,7 @@ TEST_CASE("integer")
 	cbor::chk_int(-1000, { 0x39, 0x03, 0xe7 });
 }
 
-bool validate_test_vecrtors()
+bool validate_test_vectors()
 {
 	//TODO:
 	return true;
@@ -157,7 +157,7 @@ bool validate_test_vecrtors()
 
 TEST_CASE("test vectors")
 {
-	REQUIRE(validate_test_vecrtors());
+	REQUIRE(validate_test_vectors());
 }
 
 TEST_CASE("boolean")

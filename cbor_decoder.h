@@ -25,7 +25,7 @@ public:
 
 	bool is_map() const { return hdr >> 5u == 5; }
 
-	bool is_indefinite_map() const { return hdr == 0xb6; }
+	bool is_indefinite_map() const { return hdr == 0xbf; }
 
 	bool is_tag() const { return hdr >> 5u == 6; }
 
