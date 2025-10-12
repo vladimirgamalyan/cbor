@@ -15,7 +15,7 @@ public:
 	}
 
 	void write_bytes(const std::vector<uint8_t>& data) {
-		write_bytes(&data[0], data.size());
+		write_bytes(data.data(), data.size());
 	}
 
 	void write_string(const std::string& s) {

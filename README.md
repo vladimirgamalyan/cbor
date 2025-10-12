@@ -40,6 +40,6 @@ A helper class `cbor_decoder_istream` from `cbor_decoder_istream.h` extends `cbo
 		cbor_decoder_istream decoder(f);
 
 		std::cout << "array size: " << decoder.read().as_array() << std::endl;
-		std::cout << decoder.read_string()  << std::endl;
+		std::cout << decoder.read_string() << std::endl;
 		std::cout << decoder.read().as_int() << std::endl;
 	}
