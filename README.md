@@ -5,7 +5,7 @@ A lightning fast, header only, stream oriented [CBOR](http://cbor.io/) encoder/d
 
 
 ## Encode CBOR
-Inherit `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` method for write one byte anywhere you like:
+Inherit `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` method to write one byte anywhere you like:
 
     virtual void put_byte(uint8_t b);
 
