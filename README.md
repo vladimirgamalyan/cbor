@@ -9,7 +9,7 @@ Inherit `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` meth
 
     virtual void put_byte(uint8_t b);
 
-Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. Floating point values are supported via `write_double()` (64-bit), `write_float()` (32-bit) and `write_half_float()` (16-bit). To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()` and then write the data to output stream directly.
+Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. For floating point values use `write_float_shortest()`: it follows the RFC 8949 preferred (canonical) serialization, picking the shortest of the half/single/double encodings that preserves the value exactly (just like `write_uint()` already picks the shortest integer encoding). The output is interoperable with any standard-conforming CBOR decoder. Fixed width helpers `write_double()` (64-bit), `write_float()` (32-bit) and `write_half_float()` (16-bit) are also available when a specific width is required. To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()` and then write the data to output stream directly.
 
 A helper class `cbor_encoder_ostream` from `cbor_encoder_ostream.h` extends `cbor_encoder` to work with standard `std::ostream`.
 

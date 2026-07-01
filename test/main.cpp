@@ -219,6 +219,48 @@ TEST_CASE("float encode")
 	{ cbor enc; enc.write_half_float(5.960464477539063e-8f); enc.chk(decode_hex("f90001")); }  // smallest subnormal
 }
 
+TEST_CASE("float shortest (canonical)")
+{
+	// Values that fit exactly in half precision -> 2 bytes (0xf9)
+	{ cbor enc; enc.write_float_shortest(0.0);     enc.chk(decode_hex("f90000")); }
+	{ cbor enc; enc.write_float_shortest(-0.0);    enc.chk(decode_hex("f98000")); }
+	{ cbor enc; enc.write_float_shortest(1.0);     enc.chk(decode_hex("f93c00")); }
+	{ cbor enc; enc.write_float_shortest(1.5);     enc.chk(decode_hex("f93e00")); }
+	{ cbor enc; enc.write_float_shortest(-4.0);    enc.chk(decode_hex("f9c400")); }
+	{ cbor enc; enc.write_float_shortest(65504.0); enc.chk(decode_hex("f97bff")); }
+	{ cbor enc; enc.write_float_shortest(5.960464477539063e-8); enc.chk(decode_hex("f90001")); }
+	{ cbor enc; enc.write_float_shortest(6.103515625e-5);       enc.chk(decode_hex("f90400")); }
+
+	// Values that need single precision -> 5 bytes (0xfa)
+	{ cbor enc; enc.write_float_shortest(100000.0);            enc.chk(decode_hex("fa47c35000")); }
+	{ cbor enc; enc.write_float_shortest(3.4028234663852886e+38); enc.chk(decode_hex("fa7f7fffff")); }
+
+	// Values that need full double precision -> 9 bytes (0xfb)
+	{ cbor enc; enc.write_float_shortest(1.1);      enc.chk(decode_hex("fb3ff199999999999a")); }
+	{ cbor enc; enc.write_float_shortest(1.0e+300); enc.chk(decode_hex("fb7e37e43c8800759c")); }
+	{ cbor enc; enc.write_float_shortest(-4.1);     enc.chk(decode_hex("fbc010666666666666")); }
+
+	// Infinities collapse to half precision, NaN uses the canonical half NaN
+	{ cbor enc; enc.write_float_shortest(INFINITY);  enc.chk(decode_hex("f97c00")); }
+	{ cbor enc; enc.write_float_shortest(-INFINITY); enc.chk(decode_hex("f9fc00")); }
+	{ cbor enc; enc.write_float_shortest(NAN);       enc.chk(decode_hex("f97e00")); }
+}
+
+TEST_CASE("float shortest roundtrip preserves value")
+{
+	const double values[] = { 0.0, -0.0, 1.0, -1.0, 1.5, 65504.0, 100000.0,
+		3.14159265358979, 1.1, 1.0e300, -2.5e-200, 123456789.0,
+		5.960464477539063e-8 };
+	for (double v : values)
+	{
+		cbor enc; enc.write_float_shortest(v);
+		cbor_mem_decoder dec(enc.get_data());
+		cbor_object o = dec.read();
+		REQUIRE(o.is_float());
+		REQUIRE(o.as_double() == v);
+	}
+}
+
 TEST_CASE("float roundtrip")
 {
 	const double values[] = { 0.0, -0.0, 1.0, -1.0, 3.14159265358979,

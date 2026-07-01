@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <cmath>
 
 class cbor_encoder {
 public:
@@ -36,6 +37,32 @@ public:
 
 	void write_tag(uint64_t tag) { write_type_and_value(6, tag); }
 
+	// Canonical (RFC 8949 preferred serialization): writes the value using the
+	// shortest of the half/single/double encodings that preserves it exactly.
+	// Any standard-conforming decoder reads the result back to the same value.
+	void write_float_shortest(double value) {
+		if (std::isnan(value)) {
+			// The preferred encoding of NaN is the half-precision 0xf97e00.
+			put_byte(0xf9);
+			write_big_endian(0x7e00, 2);
+			return;
+		}
+
+		float single = (float)value;
+		if ((double)single != value) { // does not fit a single without changing value
+			write_double(value);
+			return;
+		}
+
+		uint16_t half = float_to_half(single);
+		if ((double)half_to_float(half) == value)
+			write_half_float(value);
+		else
+			write_float(single);
+	}
+
+	// Fixed width encoders (useful for interop tests or when a specific width is
+	// required); the output is standard CBOR that any decoder accepts.
 	void write_half_float(float value) {
 		put_byte(0xf9);
 		write_big_endian(float_to_half(value), 2);
@@ -95,6 +122,19 @@ protected:
 		if ((mantissa & round_bit) && ((mantissa & (round_bit - 1)) || (result & 1)))
 			result += 1; // carry into exponent is intentional and correct
 		return result;
+	}
+
+	static float half_to_float(uint16_t half) {
+		uint16_t exp = (half >> 10u) & 0x1fu;
+		uint16_t mant = half & 0x3ffu;
+		float value;
+		if (exp == 0)
+			value = std::ldexp((float)mant, -24);
+		else if (exp != 31)
+			value = std::ldexp((float)(mant + 1024), exp - 25);
+		else
+			value = mant == 0 ? INFINITY : NAN;
+		return (half & 0x8000u) ? -value : value;
 	}
 
 	void write_type_and_value(uint8_t major_type, uint64_t value) {
