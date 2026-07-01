@@ -1,6 +1,9 @@
-#pragma once 
+#pragma once
 
-#include <cstdint> 
+#include <cstdint>
+#include <cstring>
+#include <cmath>
+#include <limits>
 #include <exception>
 
 class cbor_decoder_exception : public std::exception {};
@@ -28,6 +31,14 @@ public:
 	bool is_indefinite_map() const { return hdr == 0xbf; }
 
 	bool is_tag() const { return hdr >> 5u == 6; }
+
+	bool is_half_float() const { return hdr == 0xf9; }
+
+	bool is_single_float() const { return hdr == 0xfa; }
+
+	bool is_double_float() const { return hdr == 0xfb; }
+
+	bool is_float() const { return hdr == 0xf9 || hdr == 0xfa || hdr == 0xfb; }
 
 	bool as_bool() const {
 		if (hdr == 0xf4)
@@ -81,7 +92,41 @@ public:
 		return val;
 	}
 
+	double as_double() const {
+		if (hdr == 0xf9)
+			return half_to_double((uint16_t)val);
+		if (hdr == 0xfa) {
+			uint32_t bits = (uint32_t)val;
+			float f;
+			std::memcpy(&f, &bits, sizeof(f));
+			return f;
+		}
+		if (hdr == 0xfb) {
+			uint64_t bits = val;
+			double d;
+			std::memcpy(&d, &bits, sizeof(d));
+			return d;
+		}
+		throw cbor_decoder_exception();
+	}
+
+	float as_float() const { return (float)as_double(); }
+
 private:
+	static double half_to_double(uint16_t half) {
+		uint16_t exp = (half >> 10u) & 0x1fu;
+		uint16_t mant = half & 0x3ffu;
+		double value;
+		if (exp == 0)
+			value = std::ldexp(mant, -24);
+		else if (exp != 31)
+			value = std::ldexp(mant + 1024, exp - 25);
+		else
+			value = mant == 0 ? std::numeric_limits<double>::infinity()
+			                  : std::numeric_limits<double>::quiet_NaN();
+		return (half & 0x8000u) ? -value : value;
+	}
+
 	friend class cbor_decoder;
 	uint8_t hdr = 0;
 	uint64_t val = 0;

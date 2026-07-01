@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 class cbor_encoder {
 public:
@@ -35,8 +36,66 @@ public:
 
 	void write_tag(uint64_t tag) { write_type_and_value(6, tag); }
 
+	void write_half_float(float value) {
+		put_byte(0xf9);
+		write_big_endian(float_to_half(value), 2);
+	}
+
+	void write_float(float value) {
+		uint32_t bits;
+		std::memcpy(&bits, &value, sizeof(bits));
+		put_byte(0xfa);
+		write_big_endian(bits, 4);
+	}
+
+	void write_double(double value) {
+		uint64_t bits;
+		std::memcpy(&bits, &value, sizeof(bits));
+		put_byte(0xfb);
+		write_big_endian(bits, 8);
+	}
+
 protected:
 	virtual void put_byte(uint8_t b) = 0;
+
+	void write_big_endian(uint64_t value, unsigned bytes) {
+		for (unsigned i = bytes; i-- > 0;)
+			put_byte((uint8_t)(value >> (i * 8u)));
+	}
+
+	static uint16_t float_to_half(float value) {
+		uint32_t x;
+		std::memcpy(&x, &value, sizeof(x));
+		uint16_t sign = (uint16_t)((x >> 16u) & 0x8000u);
+		uint32_t mantissa = x & 0x007fffffu;
+		uint32_t biased_exp = (x >> 23u) & 0xffu;
+
+		if (biased_exp == 0xffu) // Inf or NaN
+			return (uint16_t)(sign | 0x7c00u | (mantissa ? 0x0200u : 0u));
+
+		int32_t exp = (int32_t)biased_exp - 127 + 15;
+
+		if (exp >= 31) // overflow -> Inf
+			return (uint16_t)(sign | 0x7c00u);
+
+		if (exp <= 0) { // subnormal or zero
+			if (exp < -10)
+				return sign;
+			mantissa |= 0x00800000u;
+			unsigned shift = (unsigned)(14 - exp);
+			uint32_t half_mant = mantissa >> shift;
+			uint32_t round_bit = 1u << (shift - 1);
+			if ((mantissa & round_bit) && ((mantissa & (round_bit - 1)) || (half_mant & 1)))
+				half_mant += 1;
+			return (uint16_t)(sign | half_mant);
+		}
+
+		uint16_t result = (uint16_t)(sign | ((uint16_t)exp << 10u) | (mantissa >> 13u));
+		uint32_t round_bit = 1u << 12;
+		if ((mantissa & round_bit) && ((mantissa & (round_bit - 1)) || (result & 1)))
+			result += 1; // carry into exponent is intentional and correct
+		return result;
+	}
 
 	void write_type_and_value(uint8_t major_type, uint64_t value) {
 		major_type <<= 5u;
