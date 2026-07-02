@@ -445,6 +445,33 @@ TEST_CASE("istream decoder error handling")
 		cbor_decoder_istream dec(iss);
 		REQUIRE_THROWS_AS(dec.read_string(), cbor_decoder_exception);
 	}
+	// truncated input yields cbor_decoder_exception even when the caller has
+	// enabled stream exceptions (as the README example does)
+	{
+		std::istringstream iss(std::string(), std::ios::binary);
+		iss.exceptions(std::istream::failbit | std::istream::badbit);
+		cbor_decoder_istream dec(iss);
+		REQUIRE_THROWS_AS(dec.read(), cbor_decoder_exception);
+	}
+	{
+		std::istringstream iss(std::string("\x19\x01", 2), std::ios::binary);
+		iss.exceptions(std::istream::failbit | std::istream::badbit);
+		cbor_decoder_istream dec(iss);
+		REQUIRE_THROWS_AS(dec.read(), cbor_decoder_exception);
+	}
+	{
+		std::istringstream iss(std::string("\x65\x61\x62", 3), std::ios::binary);
+		iss.exceptions(std::istream::failbit | std::istream::badbit);
+		cbor_decoder_istream dec(iss);
+		REQUIRE_THROWS_AS(dec.read_string(), cbor_decoder_exception);
+	}
+	// a stream with exceptions enabled still reads fine
+	{
+		std::istringstream iss(std::string("\x63\x61\x62\x63", 4), std::ios::binary);
+		iss.exceptions(std::istream::failbit | std::istream::badbit);
+		cbor_decoder_istream dec(iss);
+		REQUIRE(dec.read_string() == "abc");
+	}
 }
 
 TEST_CASE("float shortest keeps large finite values as doubles")
