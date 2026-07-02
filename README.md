@@ -1,6 +1,6 @@
 # cbor
 
-![cbor](docs/hero.webp)
+![cbor: header-only stream-oriented C++ CBOR encoder/decoder](docs/hero.webp)
 
 A lightning-fast, header-only, stream-oriented [CBOR](https://cbor.io/) ([RFC 8949](https://www.rfc-editor.org/rfc/rfc8949.html)) encoder/decoder. The core classes never allocate memory.
 
