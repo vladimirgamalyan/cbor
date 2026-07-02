@@ -241,9 +241,9 @@ TEST_CASE("float shortest (canonical)")
 	{ cbor enc; enc.write_float_shortest(-4.1);     enc.chk(decode_hex("fbc010666666666666")); }
 
 	// Infinities collapse to half precision, NaN uses the canonical half NaN
-	{ cbor enc; enc.write_float_shortest(INFINITY);  enc.chk(decode_hex("f97c00")); }
-	{ cbor enc; enc.write_float_shortest(-INFINITY); enc.chk(decode_hex("f9fc00")); }
-	{ cbor enc; enc.write_float_shortest(NAN);       enc.chk(decode_hex("f97e00")); }
+	{ cbor enc; enc.write_float_shortest(std::numeric_limits<double>::infinity());   enc.chk(decode_hex("f97c00")); }
+	{ cbor enc; enc.write_float_shortest(-std::numeric_limits<double>::infinity());  enc.chk(decode_hex("f9fc00")); }
+	{ cbor enc; enc.write_float_shortest(std::numeric_limits<double>::quiet_NaN()); enc.chk(decode_hex("f97e00")); }
 }
 
 TEST_CASE("float shortest roundtrip preserves value")
