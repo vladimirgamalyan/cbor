@@ -57,7 +57,7 @@ public:
 
 		uint16_t half = float_to_half(single);
 		if ((double)half_to_float(half) == value)
-			write_half_float(value);
+			write_half_float(single);
 		else
 			write_float(single);
 	}
