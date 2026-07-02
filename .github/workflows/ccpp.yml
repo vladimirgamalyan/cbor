@@ -4,16 +4,41 @@ on: [push, pull_request]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        compiler: [g++, clang++]
+        include:
+          - name: Linux (g++)
+            os: ubuntu-latest
+            compiler: g++
+          - name: Linux (clang++)
+            os: ubuntu-latest
+            compiler: clang++
+          - name: macOS (clang++)
+            os: macos-latest
+            compiler: clang++
+          - name: Windows (MSVC)
+            os: windows-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: make
-      run: make -C test CXX=${{ matrix.compiler }}
-    - name: test
-      run: cd test && ./test
+
+    - name: Build and test (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        make -C test CXX=${{ matrix.compiler }}
+        cd test && ./test
+
+    - name: Set up MSVC
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Build and test (Windows)
+      if: runner.os == 'Windows'
+      working-directory: test
+      run: |
+        cl /EHsc /W4 /std:c++14 main.cpp /Fe:test.exe
+        .\test.exe
