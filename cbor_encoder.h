@@ -134,7 +134,8 @@ protected:
 		else if (exp != 31)
 			value = std::ldexp((float)(mant + 1024), exp - 25);
 		else
-			value = mant == 0 ? INFINITY : NAN;
+			value = mant == 0 ? std::numeric_limits<float>::infinity()
+			              : std::numeric_limits<float>::quiet_NaN();
 		return (half & 0x8000u) ? -value : value;
 	}
 
