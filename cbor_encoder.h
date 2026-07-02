@@ -4,6 +4,13 @@
 #include <cstring>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
+
+class cbor_encoder_exception : public std::runtime_error {
+public:
+	explicit cbor_encoder_exception(const char* message = "CBOR encode error")
+		: std::runtime_error(message) {}
+};
 
 class cbor_encoder {
 public:
@@ -26,7 +33,11 @@ public:
 
 	void write_bytes_header(uint64_t size) { write_type_and_value(2, size); }
 
+	void write_indefinite_bytes() { put_byte(0x5f); }
+
 	void write_string_header(uint64_t size) { write_type_and_value(3, size); }
+
+	void write_indefinite_string() { put_byte(0x7f); }
 
 	void write_array(uint64_t size) { write_type_and_value(4, size); }
 
@@ -38,6 +49,21 @@ public:
 
 	void write_tag(uint64_t tag) { write_type_and_value(6, tag); }
 
+	// Simple values (major type 7); values 24..31 are reserved by RFC 8949 and
+	// cannot be encoded. Note that 20..23 are false, true, null and undefined.
+	void write_simple(uint8_t value) {
+		if (value < 24) {
+			put_byte((uint8_t)(0xe0u | value));
+		}
+		else if (value < 32) {
+			throw cbor_encoder_exception("CBOR: simple values 24..31 are reserved");
+		}
+		else {
+			put_byte(0xf8);
+			put_byte(value);
+		}
+	}
+
 	// Canonical (RFC 8949 preferred serialization): writes the value using the
 	// shortest of the half/single/double encodings that preserves it exactly.
 	// Any standard-conforming decoder reads the result back to the same value.
@@ -46,6 +72,19 @@ public:
 			// The preferred encoding of NaN is the half-precision 0xf97e00.
 			put_byte(0xf9);
 			write_big_endian(0x7e00, 2);
+			return;
+		}
+
+		if (std::isinf(value)) {
+			put_byte(0xf9);
+			write_big_endian(value < 0 ? 0xfc00 : 0x7c00, 2);
+			return;
+		}
+
+		// A finite value beyond the float range would not survive the
+		// conversion below (which is undefined behavior for such values).
+		if (std::abs(value) > (double)std::numeric_limits<float>::max()) {
+			write_double(value);
 			return;
 		}
 
