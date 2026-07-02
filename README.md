@@ -1,4 +1,7 @@
 # cbor
+
+![cbor](docs/hero.webp)
+
 A lightning-fast, header-only, stream-oriented [CBOR](https://cbor.io/) ([RFC 8949](https://www.rfc-editor.org/rfc/rfc8949.html)) encoder/decoder. The core classes never allocate memory.
 
 [![Linux](https://img.shields.io/github/actions/workflow/status/vladimirgamalyan/cbor/ccpp.yml?branch=master&label=Linux&logo=linux&logoColor=white)](https://github.com/vladimirgamalyan/cbor/actions)
