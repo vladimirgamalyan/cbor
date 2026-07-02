@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <cmath>
+#include <limits
 
 class cbor_encoder {
 public:
