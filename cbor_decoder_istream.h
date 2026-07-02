@@ -11,8 +11,10 @@ public:
 
 	std::string read_string_body(const cbor_object& o) {
 		const uint64_t size = o.as_string_header();
-		std::string r((size_t)size, ' ');
-		s.read(&r[0], (std::streamsize)size);
+		check_size(size);
+		std::string r((size_t)size, '\0');
+		if (size)
+			read_payload(&r[0], size);
 		return r;
 	}
 
@@ -20,8 +22,10 @@ public:
 
 	std::vector<uint8_t> read_bytes_body(const cbor_object& o) {
 		const uint64_t size = o.as_bytes_header();
+		check_size(size);
 		std::vector<uint8_t> r((size_t)size);
-		s.read((char*)&r[0], (std::streamsize)size);
+		if (size)
+			read_payload((char*)r.data(), size);
 		return r;
 	}
 
@@ -29,5 +33,22 @@ public:
 
 private:
 	std::istream& s;
-	uint8_t get_byte() override { return (uint8_t)s.get(); }
+
+	static void check_size(uint64_t size) {
+		if ((uint64_t)(size_t)size != size) // does not fit size_t (32 bit platforms)
+			throw cbor_decoder_exception("CBOR: length does not fit size_t");
+	}
+
+	void read_payload(char* dst, uint64_t size) {
+		s.read(dst, (std::streamsize)size);
+		if (s.gcount() != (std::streamsize)size)
+			throw cbor_decoder_exception("CBOR: unexpected end of input");
+	}
+
+	uint8_t get_byte() override {
+		const int c = s.get();
+		if (c == std::char_traits<char>::eof())
+			throw cbor_decoder_exception("CBOR: unexpected end of input");
+		return (uint8_t)c;
+	}
 };

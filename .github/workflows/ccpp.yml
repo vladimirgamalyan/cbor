@@ -1,16 +1,19 @@
 name: ci
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v1
-    - name: make
-      run: cd test ; make
-    - name: test
-      run: cd test ; ./test
 
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: make
+      run: make -C test CXX=${{ matrix.compiler }}
+    - name: test
+      run: cd test && ./test
