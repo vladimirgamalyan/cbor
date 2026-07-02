@@ -9,7 +9,7 @@ Inherit `cbor_encoder` class from `cbor_encoder.h`, and override `put_byte` meth
 
     virtual void put_byte(uint8_t b);
 
-Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()` and then write the data to output stream directly.
+Then use `cbor_encoder` methods (`write_bool()`, `write_int()`, `write_array()` etc.) to encode data. For floating point values use `write_float_shortest()`: it follows the RFC 8949 preferred (canonical) serialization, picking the shortest of the half/single/double encodings that preserves the value exactly (just like `write_uint()` already picks the shortest integer encoding). The output is interoperable with any standard-conforming CBOR decoder. Fixed width helpers `write_double()` (64-bit), `write_float()` (32-bit) and `write_half_float()` (16-bit) are also available when a specific width is required. To write a byte array or a string to stream, first call `write_bytes_header()` or `write_string_header()` and then write the data to output stream directly.
 
 A helper class `cbor_encoder_ostream` from `cbor_encoder_ostream.h` extends `cbor_encoder` to work with standard `std::ostream`.
 
@@ -18,7 +18,7 @@ Inherit `cbor_decoder` from `cbor_decoder.h`, and override `get_byte` to read on
 
     virtual uint8_t get_byte();
 
-Then use `cbor_decoder::read()` to read next records (`cbor_object`) from the input (it will raise an exception on bad records). The `cbor_object` has type check methods (`is_bool()`, `is_string()` etc.) and get value methods (`as_bool()`, `as_int()`). Methods for getting values will raise an exception when real type of records is different.
+Then use `cbor_decoder::read()` to read next records (`cbor_object`) from the input (it will raise an exception on bad records). The `cbor_object` has type check methods (`is_bool()`, `is_string()`, `is_float()` etc.) and get value methods (`as_bool()`, `as_int()`, `as_double()`, `as_float()`). Any CBOR floating point value (half, single or double precision) is read through `as_double()`/`as_float()`. Methods for getting values will raise an exception when real type of records is different.
 
 A helper class `cbor_decoder_istream` from `cbor_decoder_istream.h` extends `cbor_decoder` to work with standard `std::istream`.
 
